@@ -31,6 +31,16 @@
           installPhase = ''
             mkdir -p $out/lib
             cp slang.so $out/lib/slang.so
+
+            # Define an environment variable that can be seen by packages consuming this one. This
+            # points at the slang.so that we build, which can be handed to yosys with
+            #
+            #    yosys -m $YOSYS_SLANG_MODULE ...
+            #
+            # That will be visible in the build of a package that consumes yosys-slang, and will
+            # also be visible when running 'nix develop' in that package.
+            mkdir -p $out/nix-support
+            echo "export YOSYS_SLANG_MODULE=\"$out/lib/slang.so\"" >$out/nix-support/setup-hook
           '';
         };
       });
